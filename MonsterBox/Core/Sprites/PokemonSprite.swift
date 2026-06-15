@@ -68,6 +68,7 @@ actor SpriteStore {
 final class SpritePrefetcher: ObservableObject {
     @Published var completed = 0
     @Published var total = 0
+    @Published var success = 0
     @Published var isFinished = false
 
     private let doneKey = "didPrefetchSprites_v1"
@@ -75,11 +76,26 @@ final class SpritePrefetcher: ObservableObject {
 
     /// 初回(または前回未完了)のみ全件取得。完了済みなら即終了。
     func prefetchAllIfNeeded() async {
-        guard !alreadyDone else { isFinished = true; return }
+        guard !alreadyDone else {
+            let n = SpriteProvider.allDexes.count
+            total = n; completed = n; success = n
+            isFinished = true
+            return
+        }
+        await runPrefetch()
+    }
+
+    /// ユーザー操作による再取得。alreadyDone でも実行する (既キャッシュは即返る)。
+    func retry() async {
+        await runPrefetch()
+    }
+
+    private func runPrefetch() async {
+        isFinished = false
         let dexes = SpriteProvider.allDexes
         total = dexes.count
         completed = 0
-        var success = 0
+        success = 0
         for dex in dexes {
             if await SpriteStore.shared.data(forDex: dex) != nil { success += 1 }
             completed += 1
