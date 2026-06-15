@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  RootView.swift
 //  MonsterBox
 //
 //  Created by Taiyo KOSHIBA on 2026/06/15.
@@ -7,18 +7,18 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct RootView: View {
     var body: some View {
         VStack {
             Image(systemName: "globe")
                 .imageScale(.large)
                 .foregroundStyle(.tint)
-            Text("Hello, test!")
+            Text("Hello, world!")
         }
         .padding()
     }
 }
 
 #Preview {
-    ContentView()
+    RootView()
 }
