@@ -11,13 +11,21 @@ import SwiftData
 struct RootView: View {
     @Environment(\.modelContext) private var modelContext
     @StateObject private var prefetcher = SpritePrefetcher()
+    /// 一部失敗でも「このまま進む」をユーザーが選んだ場合 true。
+    @State private var userProceeded = false
+
+    /// ゲートを抜けて Home を表示してよいか。
+    private var shouldShowHome: Bool {
+        guard prefetcher.isFinished else { return false }
+        return prefetcher.success == prefetcher.total || userProceeded
+    }
 
     var body: some View {
         Group {
-            if prefetcher.isFinished {
+            if shouldShowHome {
                 PokemonHomeView()
             } else {
-                PrefetchGateView(prefetcher: prefetcher)
+                PrefetchGateView(prefetcher: prefetcher, onProceed: { userProceeded = true })
             }
         }
         .task {
@@ -31,10 +39,19 @@ struct RootView: View {
 
 private struct PrefetchGateView: View {
     @ObservedObject var prefetcher: SpritePrefetcher
+    let onProceed: () -> Void
+
+    private var failedCount: Int {
+        max(prefetcher.total - prefetcher.success, 0)
+    }
+
+    private var hasFailures: Bool {
+        prefetcher.isFinished && failedCount > 0
+    }
 
     var body: some View {
         VStack(spacing: 16) {
-            Text("スプライトを準備中…")
+            Text(hasFailures ? "一部の取得に失敗しました" : "スプライトを準備中…")
                 .font(.headline)
             ProgressView(value: progress)
                 .progressViewStyle(.linear)
@@ -42,6 +59,23 @@ private struct PrefetchGateView: View {
             Text("\(prefetcher.completed) / \(max(prefetcher.total, 1))")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
+
+            if hasFailures {
+                Text("\(failedCount) 件取得できませんでした。\nそのまま進むと不足分はタイプ色タイルで表示されます。")
+                    .font(.footnote)
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(.secondary)
+                    .padding(.top, 4)
+                HStack(spacing: 12) {
+                    Button("再取得") {
+                        Task { await prefetcher.retry() }
+                    }
+                    .buttonStyle(.bordered)
+                    Button("このまま進む") { onProceed() }
+                        .buttonStyle(.borderedProminent)
+                }
+                .padding(.top, 4)
+            }
         }
         .padding()
     }
