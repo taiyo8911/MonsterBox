@@ -6,8 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		DF54AAD92FDFA49C001E3384 /* readme.md in Resources */ = {isa = PBXBuildFile; fileRef = DF54AAD82FDFA495001E3384 /* readme.md */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		DF54AABF2FDFA053001E3384 /* MonsterBox.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MonsterBox.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DF54AAD82FDFA495001E3384 /* readme.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = readme.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -32,6 +37,7 @@
 		DF54AAB62FDFA053001E3384 = {
 			isa = PBXGroup;
 			children = (
+				DF54AAD82FDFA495001E3384 /* readme.md */,
 				DF54AAC12FDFA053001E3384 /* MonsterBox */,
 				DF54AAC02FDFA053001E3384 /* Products */,
 			);
@@ -109,6 +115,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DF54AAD92FDFA49C001E3384 /* readme.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
