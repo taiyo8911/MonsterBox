@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct MonsterBoxApp: App {
@@ -13,5 +14,6 @@ struct MonsterBoxApp: App {
         WindowGroup {
             RootView()
         }
+        .modelContainer(for: [OwnedPokemon.self, BoxInfo.self])
     }
 }
