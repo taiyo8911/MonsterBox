@@ -13,7 +13,10 @@ import SwiftData
 // 編集フォームへの導線を提供する。
 struct PokemonDetailView: View {
     @Bindable var pokemon: OwnedPokemon
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
     @State private var showEditor = false
+    @State private var showReleaseAlert = false
 
     private var species: Species? { pokemon.species }
     private var master: MasterData { .shared }
@@ -24,6 +27,7 @@ struct PokemonDetailView: View {
             statusSection
             profileSection
             movesSection
+            releaseSection
         }
         .navigationTitle(pokemon.displayName)
         .navigationBarTitleDisplayMode(.inline)
@@ -37,6 +41,18 @@ struct PokemonDetailView: View {
                 PokemonEditorView(mode: .edit(pokemon))
             }
         }
+        .alert("\(pokemon.displayName) を にがしますか？", isPresented: $showReleaseAlert) {
+            Button("にがす", role: .destructive) { release() }
+            Button("キャンセル", role: .cancel) {}
+        } message: {
+            Text("元に戻せません。")
+        }
+    }
+
+    private func release() {
+        modelContext.delete(pokemon)
+        try? modelContext.save()
+        dismiss()
     }
 
     // MARK: 種族・スプライト
@@ -89,6 +105,22 @@ struct PokemonDetailView: View {
             LabeledContent("ボックス", value: "\(pokemon.boxNumber) / スロット \(pokemon.slot + 1)")
             if !pokemon.memo.isEmpty {
                 LabeledContent("メモ", value: pokemon.memo)
+            }
+        }
+    }
+
+    // MARK: にがす
+
+    private var releaseSection: some View {
+        Section {
+            Button(role: .destructive) {
+                showReleaseAlert = true
+            } label: {
+                HStack {
+                    Spacer()
+                    Text("にがす")
+                    Spacer()
+                }
             }
         }
     }

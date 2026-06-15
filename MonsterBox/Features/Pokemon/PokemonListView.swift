@@ -12,8 +12,10 @@ import SwiftData
 // ソートキー: 図鑑番号 / レベル / 名前 / タイプ / 性格 / 持ち物。
 // 行タップで個体詳細へ。
 struct PokemonListView: View {
+    @Environment(\.modelContext) private var modelContext
     @Query private var allPokemon: [OwnedPokemon]
     @State private var sortKey: SortKey = .dex
+    @State private var releaseTarget: OwnedPokemon?
 
     enum SortKey: String, CaseIterable, Identifiable {
         case dex, level, name, type, nature, heldItem
@@ -76,9 +78,29 @@ struct PokemonListView: View {
                         } label: {
                             PokemonRow(pokemon: p)
                         }
+                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                            Button(role: .destructive) {
+                                releaseTarget = p
+                            } label: {
+                                Label("にがす", systemImage: "tray.and.arrow.up")
+                            }
+                        }
                     }
                 }
             }
+        }
+        .alert(
+            "\(releaseTarget?.displayName ?? "") を にがしますか？",
+            isPresented: Binding(
+                get: { releaseTarget != nil },
+                set: { if !$0 { releaseTarget = nil } }
+            ),
+            presenting: releaseTarget
+        ) { p in
+            Button("にがす", role: .destructive) { release(p) }
+            Button("キャンセル", role: .cancel) {}
+        } message: { _ in
+            Text("元に戻せません。")
         }
         .toolbar {
             if !allPokemon.isEmpty {
@@ -93,6 +115,12 @@ struct PokemonListView: View {
                 }
             }
         }
+    }
+
+    private func release(_ p: OwnedPokemon) {
+        modelContext.delete(p)
+        try? modelContext.save()
+        releaseTarget = nil
     }
 }
 

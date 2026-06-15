@@ -22,6 +22,7 @@ struct BoxView: View {
     @State private var editTarget: OwnedPokemon?
     @State private var renameText: String = ""
     @State private var showRename = false
+    @State private var releaseTarget: OwnedPokemon?
 
     @State private var move = BoxMoveModel()
 
@@ -67,6 +68,7 @@ struct BoxView: View {
             Button("移動") { startMoveSelected() }
             Button("強さを見る") { detailTarget = selected }
             Button("編集する") { editTarget = selected }
+            Button("にがす", role: .destructive) { releaseTarget = selected }
             Button("キャンセル", role: .cancel) { selected = nil }
         }
         .sheet(item: $detailTarget) { p in
@@ -80,6 +82,26 @@ struct BoxView: View {
             Button("保存") { saveRename() }
             Button("キャンセル", role: .cancel) {}
         }
+        .alert(
+            "\(releaseTarget?.displayName ?? "") を にがしますか？",
+            isPresented: Binding(
+                get: { releaseTarget != nil },
+                set: { if !$0 { releaseTarget = nil } }
+            ),
+            presenting: releaseTarget
+        ) { p in
+            Button("にがす", role: .destructive) { release(p) }
+            Button("キャンセル", role: .cancel) {}
+        } message: { _ in
+            Text("元に戻せません。")
+        }
+    }
+
+    private func release(_ p: OwnedPokemon) {
+        modelContext.delete(p)
+        try? modelContext.save()
+        releaseTarget = nil
+        selected = nil
     }
 
     // MARK: ヘッダ (名前 + 左右ボタン)
