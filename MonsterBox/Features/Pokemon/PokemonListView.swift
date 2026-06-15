@@ -157,3 +157,7 @@ private struct PokemonRow: View {
         }
     }
 }
+
+#Preview {
+    PokemonListView()
+}

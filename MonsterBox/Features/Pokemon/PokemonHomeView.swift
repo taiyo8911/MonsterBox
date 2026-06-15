@@ -74,3 +74,9 @@ struct PokemonHomeView: View {
         }
     }
 }
+
+
+// プレビュー
+#Preview {
+    PokemonHomeView()
+}

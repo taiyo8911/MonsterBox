@@ -322,3 +322,11 @@ struct SpeciesPickerView: View {
         }
     }
 }
+
+
+#Preview {
+    NavigationStack {
+        PokemonEditorView(mode: .create)
+    }
+    .modelContainer(for: [OwnedPokemon.self], inMemory: true)
+}

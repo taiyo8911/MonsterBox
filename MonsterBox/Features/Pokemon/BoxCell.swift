@@ -49,3 +49,12 @@ struct BoxCell: View {
             )
     }
 }
+
+#Preview {
+    HStack {
+        BoxCell(pokemon: nil, isSelected: false, isMoveTarget: false)
+        BoxCell(pokemon: nil, isSelected: true, isMoveTarget: false)
+        BoxCell(pokemon: nil, isSelected: false, isMoveTarget: true)
+    }
+    .padding()
+}
