@@ -37,9 +37,18 @@ struct BoxView: View {
         VStack(spacing: 8) {
             header
             grid
-            footer
+            Spacer(minLength: 0)
         }
         .padding(.horizontal)
+        .safeAreaInset(edge: .bottom) {
+            if move.isMoving {
+                movingFooter
+                    .padding(.horizontal)
+                    .padding(.bottom, 8)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
+        .animation(.easeInOut(duration: 0.2), value: move.isMoving)
         .confirmationDialog(
             selected?.displayName ?? "",
             isPresented: $showActionMenu,
@@ -115,10 +124,10 @@ struct BoxView: View {
         .onTapGesture { handleTap(slot: slot, occupant: occupant) }
     }
 
-    // MARK: フッタ (移動中の操作)
+    // MARK: 移動中フッタ (safeAreaInset でグリッドの上に重ねない位置に表示)
 
     @ViewBuilder
-    private var footer: some View {
+    private var movingFooter: some View {
         if let held = move.held {
             HStack(spacing: 12) {
                 SpriteImage(dex: held.speciesDex, typeIDs: held.typeIDs)
@@ -130,9 +139,6 @@ struct BoxView: View {
             }
             .padding(8)
             .background(Color.green.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
-            .padding(.bottom, 8)
-        } else {
-            Color.clear.frame(height: 1)
         }
     }
 
