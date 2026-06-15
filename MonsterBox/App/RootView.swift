@@ -51,7 +51,7 @@ private struct PrefetchGateView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            Text(hasFailures ? "一部の取得に失敗しました" : "スプライトを準備中…")
+            Text(hasFailures ? "一部の取得に失敗しました" : "初期データを準備中…")
                 .font(.headline)
             ProgressView(value: progress)
                 .progressViewStyle(.linear)
@@ -61,13 +61,13 @@ private struct PrefetchGateView: View {
                 .foregroundStyle(.secondary)
 
             if hasFailures {
-                Text("\(failedCount) 件取得できませんでした。\nそのまま進むと不足分はタイプ色タイルで表示されます。")
+                Text("\(failedCount) 件取得できませんでした。\nそのまま進んでも問題はありません。不足しているデータのみタイプ色タイルで表示されます。")
                     .font(.footnote)
                     .multilineTextAlignment(.center)
                     .foregroundStyle(.secondary)
                     .padding(.top, 4)
                 HStack(spacing: 12) {
-                    Button("再取得") {
+                    Button("データを再取得する") {
                         Task { await prefetcher.retry() }
                     }
                     .buttonStyle(.bordered)
