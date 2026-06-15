@@ -81,13 +81,15 @@ struct PokemonListView: View {
             }
         }
         .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                Menu {
-                    Picker("並び替え", selection: $sortKey) {
-                        ForEach(SortKey.allCases) { Text($0.label).tag($0) }
+            if !allPokemon.isEmpty {
+                ToolbarItem(placement: .topBarLeading) {
+                    Menu {
+                        Picker("並び替え", selection: $sortKey) {
+                            ForEach(SortKey.allCases) { Text($0.label).tag($0) }
+                        }
+                    } label: {
+                        Label("並び替え", systemImage: "arrow.up.arrow.down")
                     }
-                } label: {
-                    Label("並び替え", systemImage: "arrow.up.arrow.down")
                 }
             }
         }
