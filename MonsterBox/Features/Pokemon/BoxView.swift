@@ -34,12 +34,22 @@ struct BoxView: View {
     }
 
     var body: some View {
-        VStack(spacing: 8) {
-            header
-            grid
-            Spacer(minLength: 0)
+        Group {
+            if allPokemon.isEmpty {
+                ContentUnavailableView(
+                    "ポケモンがいません",
+                    systemImage: "tray",
+                    description: Text("右上の + から登録できます。")
+                )
+            } else {
+                VStack(spacing: 8) {
+                    header
+                    grid
+                    Spacer(minLength: 0)
+                }
+                .padding(.horizontal)
+            }
         }
-        .padding(.horizontal)
         .safeAreaInset(edge: .bottom) {
             if move.isMoving {
                 movingFooter
