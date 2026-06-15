@@ -24,6 +24,12 @@ struct PokemonHomeView: View {
 
     @State private var tab: Tab = .list
     @State private var showEditor = false
+    @State private var showFullAlert = false
+    @Query private var allPokemon: [OwnedPokemon]
+
+    private var isFull: Bool {
+        allPokemon.count >= AppSeed.boxCount * AppSeed.boxCapacity
+    }
 
     var body: some View {
         NavigationStack {
@@ -45,7 +51,11 @@ struct PokemonHomeView: View {
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        showEditor = true
+                        if isFull {
+                            showFullAlert = true
+                        } else {
+                            showEditor = true
+                        }
                     } label: {
                         Image(systemName: "plus")
                     }
@@ -55,6 +65,11 @@ struct PokemonHomeView: View {
                 NavigationStack {
                     PokemonEditorView(mode: .create)
                 }
+            }
+            .alert("ボックスが満杯です", isPresented: $showFullAlert) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text("登録できる上限 (\(AppSeed.boxCount * AppSeed.boxCapacity) 体) に達しています。不要な個体を削除してから追加してください。")
             }
         }
     }
