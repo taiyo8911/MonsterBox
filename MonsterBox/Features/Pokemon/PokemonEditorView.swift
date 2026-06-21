@@ -26,7 +26,7 @@ struct PokemonEditorView: View {
     @State private var speciesDex: Int = 1
     @State private var nickname: String = ""
     @State private var gender: Gender = .genderless
-    @State private var level: Int = 50
+    @State private var level: Int = 0
     @State private var hp: Int = 0
     @State private var attack: Int = 0
     @State private var defense: Int = 0
@@ -119,16 +119,20 @@ struct PokemonEditorView: View {
             HStack {
                 Text("レベル")
                 Spacer()
-                Stepper("", value: $level, in: 1...100)
-                    .labelsHidden()
-                TextField("1", value: $level, format: .number)
-                    .keyboardType(.numberPad)
-                    .multilineTextAlignment(.trailing)
-                    .frame(width: 60)
-            }
-            .onChange(of: level) { _, newValue in
-                if newValue < 1 { level = 1 }
-                else if newValue > 100 { level = 100 }
+                TextField("1", text: Binding(
+                    get: { level == 0 ? "" : String(level) },
+                    set: {
+                        let n = Int($0) ?? 0
+                        level = min(100, n)
+                    }
+                ))
+                .keyboardType(.numberPad)
+                .multilineTextAlignment(.trailing)
+                .frame(width: 70)
+                .padding(.vertical, 4)
+                .padding(.horizontal, 8)
+                .background(Color(.tertiarySystemFill), in: .rect(cornerRadius: 6))
+                .padding(.trailing, 4)
             }
             statRow("HP", value: $hp)
             statRow("こうげき", value: $attack)
@@ -143,10 +147,17 @@ struct PokemonEditorView: View {
         HStack {
             Text(label)
             Spacer()
-            TextField("0", value: value, format: .number)
-                .keyboardType(.numberPad)
-                .multilineTextAlignment(.trailing)
-                .frame(width: 80)
+            TextField("0", text: Binding(
+                get: { value.wrappedValue == 0 ? "" : String(value.wrappedValue) },
+                set: { value.wrappedValue = Int($0) ?? 0 }
+            ))
+            .keyboardType(.numberPad)
+            .multilineTextAlignment(.trailing)
+            .frame(width: 70)
+            .padding(.vertical, 4)
+            .padding(.horizontal, 8)
+            .background(Color(.tertiarySystemFill), in: .rect(cornerRadius: 6))
+            .padding(.trailing, 4)
         }
     }
 
@@ -232,6 +243,8 @@ struct PokemonEditorView: View {
         // 種族変更で互換性のない技は除外
         let validIDs = Set(learnable.map { $0.id })
         let filteredMoves = moveIDs.filter { validIDs.contains($0) }
+        // レベルは編集中の空入力で 0 になり得るため、保存時に下限補正
+        let safeLevel = max(1, level)
 
         switch mode {
         case .create:
@@ -240,7 +253,7 @@ struct PokemonEditorView: View {
                 speciesDex: speciesDex,
                 nickname: nickname,
                 gender: gender,
-                level: level,
+                level: safeLevel,
                 hp: hp, attack: attack, defense: defense,
                 spAttack: spAttack, spDefense: spDefense, speed: speed,
                 nature: nature,
@@ -256,7 +269,7 @@ struct PokemonEditorView: View {
             p.speciesDex = speciesDex
             p.nickname = nickname
             p.gender = gender
-            p.level = level
+            p.level = safeLevel
             p.hp = hp; p.attack = attack; p.defense = defense
             p.spAttack = spAttack; p.spDefense = spDefense; p.speed = speed
             p.nature = nature
