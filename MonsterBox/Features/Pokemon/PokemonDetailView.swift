@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 // 個体詳細 (強さを見る)
-// 種族・タイプ・レベル・能力値6・性格・持ち物・覚えている技 を表示し、
+// 種族・タイプ・レベル・能力値6・性格・覚えている技 を表示し、
 // 編集フォームへの導線を提供する。
 struct PokemonDetailView: View {
     @Bindable var pokemon: OwnedPokemon
@@ -101,7 +101,6 @@ struct PokemonDetailView: View {
             LabeledContent("ニックネーム", value: pokemon.nickname.isEmpty ? "—" : pokemon.nickname)
             LabeledContent("性別", value: pokemon.gender.nameJa)
             LabeledContent("性格", value: pokemon.nature.nameJa)
-            LabeledContent("持ち物", value: pokemon.heldItem.isEmpty ? "—" : pokemon.heldItem)
             LabeledContent("ボックス", value: "\(pokemon.boxNumber) / スロット \(pokemon.slot + 1)")
             if !pokemon.memo.isEmpty {
                 LabeledContent("メモ", value: pokemon.memo)

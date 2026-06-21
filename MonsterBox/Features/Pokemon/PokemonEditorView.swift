@@ -35,7 +35,6 @@ struct PokemonEditorView: View {
     @State private var speed: Int = 0
     @State private var nature: Nature = .hardy
     @State private var abilityID: String = ""
-    @State private var heldItem: String = ""
     @State private var moveIDs: [String] = []
     @State private var memo: String = ""
 
@@ -134,7 +133,6 @@ struct PokemonEditorView: View {
                         .foregroundStyle(.tertiary)
                 }
             }
-            TextField("持ち物", text: $heldItem)
         }
     }
 
@@ -268,7 +266,6 @@ struct PokemonEditorView: View {
             speed = p.speed
             nature = p.nature
             abilityID = p.abilityID
-            heldItem = p.heldItem
             moveIDs = p.moveIDs
             memo = p.memo
         }
@@ -303,7 +300,6 @@ struct PokemonEditorView: View {
                 spAttack: spAttack, spDefense: spDefense, speed: speed,
                 nature: nature,
                 abilityID: abilityID,
-                heldItem: heldItem,
                 moveIDs: filteredMoves,
                 boxNumber: box,
                 slot: slot,
@@ -320,7 +316,6 @@ struct PokemonEditorView: View {
             p.spAttack = spAttack; p.spDefense = spDefense; p.speed = speed
             p.nature = nature
             p.abilityID = abilityID
-            p.heldItem = heldItem
             p.moveIDs = filteredMoves
             p.memo = memo
         }

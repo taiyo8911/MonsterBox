@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 // 所持ポケモンの一覧表示。
-// ソートキー: 図鑑番号 / レベル / 名前 / タイプ / 性格 / 持ち物。
+// ソートキー: 図鑑番号 / レベル / 名前 / タイプ / 性格。
 // 行タップで個体詳細へ。
 struct PokemonListView: View {
     @Environment(\.modelContext) private var modelContext
@@ -18,7 +18,7 @@ struct PokemonListView: View {
     @State private var releaseTarget: OwnedPokemon?
 
     enum SortKey: String, CaseIterable, Identifiable {
-        case dex, level, name, type, nature, heldItem
+        case dex, level, name, type, nature
         var id: String { rawValue }
         var label: String {
             switch self {
@@ -27,7 +27,6 @@ struct PokemonListView: View {
             case .name: return "名前"
             case .type: return "タイプ"
             case .nature: return "性格"
-            case .heldItem: return "持ち物"
             }
         }
     }
@@ -51,11 +50,6 @@ struct PokemonListView: View {
             case .nature:
                 if a.nature.nameJa != b.nature.nameJa {
                     return a.nature.nameJa.localizedStandardCompare(b.nature.nameJa) == .orderedAscending
-                }
-                return a.speciesDex < b.speciesDex
-            case .heldItem:
-                if a.heldItem != b.heldItem {
-                    return a.heldItem.localizedStandardCompare(b.heldItem) == .orderedAscending
                 }
                 return a.speciesDex < b.speciesDex
             }
@@ -143,11 +137,6 @@ private struct PokemonRow: View {
                 }
                 HStack(spacing: 4) {
                     ForEach(pokemon.typeIDs, id: \.self) { TypeBadge(typeID: $0) }
-                    if !pokemon.heldItem.isEmpty {
-                        Text("・\(pokemon.heldItem)")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                    }
                 }
             }
             Spacer()
