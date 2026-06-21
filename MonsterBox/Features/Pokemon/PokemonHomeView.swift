@@ -24,7 +24,8 @@ struct PokemonHomeView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 12) {
-                detailArea
+                PokemonDetailPanel(pokemon: selected)
+                    .padding(.horizontal)
                 BoxView(selected: $selected)
             }
             .navigationTitle("MonsterBox")
@@ -61,18 +62,6 @@ struct PokemonHomeView: View {
         }
     }
 
-    // MARK: 上段詳細エリア (未選択時は空)
-
-    @ViewBuilder
-    private var detailArea: some View {
-        if let p = selected {
-            PokemonDetailPanel(pokemon: p)
-                .padding(.horizontal)
-        } else {
-            Color.clear
-                .frame(height: 1)
-        }
-    }
 }
 
 #Preview {

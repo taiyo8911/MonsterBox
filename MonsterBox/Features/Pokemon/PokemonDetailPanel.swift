@@ -10,24 +10,30 @@ import SwiftUI
 // 上段に表示する個体詳細パネル。左右2カラム構成。
 // 左: Lv/名前/性別 → スプライト → タイプ → せいかく → とくせい
 // 右: 能力6種 → 技 (最大4)
+// 未選択時 (pokemon == nil) は枠だけ残して中身を空にする (C案: プレースホルダ)。
 struct PokemonDetailPanel: View {
-    let pokemon: OwnedPokemon
+    let pokemon: OwnedPokemon?
 
     private var master: MasterData { .shared }
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
-            leftColumn
-            Divider()
-            rightColumn
+            if let pokemon {
+                leftColumn(pokemon)
+                Divider()
+                rightColumn(pokemon)
+            } else {
+                Color.clear
+            }
         }
         .padding(12)
+        .frame(maxWidth: .infinity, minHeight: 260, alignment: .topLeading)
         .background(Color.secondary.opacity(0.06), in: RoundedRectangle(cornerRadius: 12))
     }
 
     // MARK: 左カラム
 
-    private var leftColumn: some View {
+    private func leftColumn(_ pokemon: OwnedPokemon) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 6) {
                 Text("Lv.\(pokemon.level)")
@@ -64,7 +70,7 @@ struct PokemonDetailPanel: View {
 
     // MARK: 右カラム
 
-    private var rightColumn: some View {
+    private func rightColumn(_ pokemon: OwnedPokemon) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             statRow("HP", pokemon.hp)
             statRow("こうげき", pokemon.attack)

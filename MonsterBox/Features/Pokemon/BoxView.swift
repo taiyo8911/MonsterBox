@@ -10,7 +10,7 @@ import SwiftData
 
 // 14箱・6×5・左右切替のボックス画面。
 // タップ→上段にデータを表示 (Binding で親へ通知)。
-// 長押し→アクションメニュー (移動/編集する/にがす)。移動中は持ち替え式。
+// 長押し→アクションメニュー (つかむ/つよさをかえる/にがす)。移動中は持ち替え式。
 struct BoxView: View {
     @Binding var selected: OwnedPokemon?
 
@@ -24,6 +24,7 @@ struct BoxView: View {
     @State private var renameText: String = ""
     @State private var showRename = false
     @State private var releaseTarget: OwnedPokemon?
+    @State private var hapticTrigger: Int = 0
 
     @State private var move = BoxMoveModel()
 
@@ -51,6 +52,7 @@ struct BoxView: View {
             }
         }
         .animation(.easeInOut(duration: 0.2), value: move.isMoving)
+        .sensoryFeedback(.impact(flexibility: .rigid, intensity: 1.0), trigger: hapticTrigger)
         .confirmationDialog(
             actionTarget?.displayName ?? "",
             isPresented: Binding(
@@ -59,8 +61,8 @@ struct BoxView: View {
             ),
             titleVisibility: .visible
         ) {
-            Button("移動") { startMoveActionTarget() }
-            Button("編集する") { editTarget = actionTarget }
+            Button("つかむ") { startMoveActionTarget() }
+            Button("つよさをかえる") { editTarget = actionTarget }
             Button("にがす", role: .destructive) { releaseTarget = actionTarget }
             Button("キャンセル", role: .cancel) { actionTarget = nil }
         }
@@ -175,11 +177,13 @@ struct BoxView: View {
             try? modelContext.save()
             return
         }
-        selected = occupant
+        guard let p = occupant else { return }
+        selected = p
     }
 
     private func handleLongPress(occupant: OwnedPokemon?) {
         guard !move.isMoving, let p = occupant else { return }
+        hapticTrigger &+= 1
         selected = p
         actionTarget = p
     }
@@ -210,4 +214,9 @@ struct BoxView: View {
         info.name = name
         try? modelContext.save()
     }
+}
+
+
+#Preview {
+    BoxView(selected: .constant(nil))
 }
