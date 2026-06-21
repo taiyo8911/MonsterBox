@@ -25,7 +25,7 @@ struct PokemonEditorView: View {
     // フォーム状態
     @State private var speciesDex: Int = 1
     @State private var nickname: String = ""
-    @State private var gender: Gender = .genderless
+    @State private var gender: Gender? = nil
     @State private var level: Int = 0
     @State private var hp: Int = 0
     @State private var attack: Int = 0
@@ -66,7 +66,7 @@ struct PokemonEditorView: View {
             }
             ToolbarItem(placement: .topBarTrailing) {
                 Button("保存") { save() }
-                    .disabled(species == nil)
+                    .disabled(species == nil || gender == nil)
             }
         }
         .onAppear { loadIfNeeded() }
@@ -104,14 +104,38 @@ struct PokemonEditorView: View {
     private var profileSection: some View {
         Section("プロフィール") {
             TextField("ニックネーム", text: $nickname)
-            Picker("性別", selection: $gender) {
-                ForEach(Gender.allCases) { Text($0.nameJa).tag($0) }
+            HStack {
+                Text("性別")
+                Spacer()
+                HStack(spacing: 6) {
+                    genderButton(.male, label: "♂", color: .blue)
+                    genderButton(.female, label: "♀", color: .pink)
+                    genderButton(.genderless, label: "性別不明", color: .gray, minWidth: 88)
+                }
             }
             Picker("性格", selection: $nature) {
                 ForEach(Nature.allCases) { Text($0.nameJa).tag($0) }
             }
             TextField("持ち物", text: $heldItem)
         }
+    }
+
+    private func genderButton(_ value: Gender, label: String, color: Color, minWidth: CGFloat = 44) -> some View {
+        let selected = gender == value
+        return Button {
+            gender = value
+        } label: {
+            Text(label)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(selected ? .white : color)
+                .frame(minWidth: minWidth, minHeight: 28)
+                .padding(.horizontal, 4)
+                .background(
+                    selected ? color : Color(.tertiarySystemFill),
+                    in: .rect(cornerRadius: 6)
+                )
+        }
+        .buttonStyle(.plain)
     }
 
     private var statusSection: some View {
@@ -240,6 +264,8 @@ struct PokemonEditorView: View {
     }
 
     private func save() {
+        // 性別は保存ボタンの disabled で nil 不可だが、念のためガード
+        guard let gender else { return }
         // 種族変更で互換性のない技は除外
         let validIDs = Set(learnable.map { $0.id })
         let filteredMoves = moveIDs.filter { validIDs.contains($0) }
