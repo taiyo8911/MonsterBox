@@ -80,6 +80,7 @@ final class OwnedPokemon {
     var speed: Int
 
     var natureRaw: String         // Nature.rawValue
+    var abilityID: String = ""    // AbilityEntry.id (未選択は空文字。既存データのマイグレ用にデフォルト指定)
     var heldItem: String          // 持ち物 (自由入力)
     var moveIDs: [String]         // Move.id を最大4つ
 
@@ -97,6 +98,7 @@ final class OwnedPokemon {
         hp: Int = 0, attack: Int = 0, defense: Int = 0,
         spAttack: Int = 0, spDefense: Int = 0, speed: Int = 0,
         nature: Nature = .hardy,
+        abilityID: String = "",
         heldItem: String = "",
         moveIDs: [String] = [],
         boxNumber: Int = 1,
@@ -111,6 +113,7 @@ final class OwnedPokemon {
         self.hp = hp; self.attack = attack; self.defense = defense
         self.spAttack = spAttack; self.spDefense = spDefense; self.speed = speed
         self.natureRaw = nature.rawValue
+        self.abilityID = abilityID
         self.heldItem = heldItem
         self.moveIDs = moveIDs
         self.boxNumber = boxNumber
@@ -132,6 +135,8 @@ extension OwnedPokemon {
     }
     /// マスタの種族情報
     var species: Species? { MasterData.shared.species(dex: speciesDex) }
+    /// マスタの特性情報 (未選択 / 不正IDなら nil)
+    var ability: AbilityEntry? { MasterData.shared.ability(id: abilityID) }
     /// タイプID配列 (一覧の色分け・将来のグラフ集計に使用)
     var typeIDs: [String] { species?.types ?? [] }
     /// 表示名 (ニックネーム優先、無ければ種族名)

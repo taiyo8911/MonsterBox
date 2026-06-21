@@ -34,11 +34,13 @@ struct PokemonEditorView: View {
     @State private var spDefense: Int = 0
     @State private var speed: Int = 0
     @State private var nature: Nature = .hardy
+    @State private var abilityID: String = ""
     @State private var heldItem: String = ""
     @State private var moveIDs: [String] = []
     @State private var memo: String = ""
 
     @State private var showSpeciesPicker = false
+    @State private var showAbilityPicker = false
     @State private var didLoad = false
 
     private let master = MasterData.shared
@@ -72,6 +74,9 @@ struct PokemonEditorView: View {
         .onAppear { loadIfNeeded() }
         .sheet(isPresented: $showSpeciesPicker) {
             SpeciesPickerView(selectedDex: $speciesDex)
+        }
+        .sheet(isPresented: $showAbilityPicker) {
+            AbilityPickerView(selectedID: $abilityID)
         }
     }
 
@@ -115,6 +120,19 @@ struct PokemonEditorView: View {
             }
             Picker("性格", selection: $nature) {
                 ForEach(Nature.allCases) { Text($0.nameJa).tag($0) }
+            }
+            Button {
+                showAbilityPicker = true
+            } label: {
+                HStack {
+                    Text("とくせい").foregroundStyle(.primary)
+                    Spacer()
+                    Text(abilityID.isEmpty ? "未選択" : master.abilityNameJa(abilityID))
+                        .foregroundStyle(abilityID.isEmpty ? .secondary : .primary)
+                    Image(systemName: "chevron.right")
+                        .font(.footnote)
+                        .foregroundStyle(.tertiary)
+                }
             }
             TextField("持ち物", text: $heldItem)
         }
@@ -249,6 +267,7 @@ struct PokemonEditorView: View {
             spDefense = p.spDefense
             speed = p.speed
             nature = p.nature
+            abilityID = p.abilityID
             heldItem = p.heldItem
             moveIDs = p.moveIDs
             memo = p.memo
@@ -283,6 +302,7 @@ struct PokemonEditorView: View {
                 hp: hp, attack: attack, defense: defense,
                 spAttack: spAttack, spDefense: spDefense, speed: speed,
                 nature: nature,
+                abilityID: abilityID,
                 heldItem: heldItem,
                 moveIDs: filteredMoves,
                 boxNumber: box,
@@ -299,6 +319,7 @@ struct PokemonEditorView: View {
             p.hp = hp; p.attack = attack; p.defense = defense
             p.spAttack = spAttack; p.spDefense = spDefense; p.speed = speed
             p.nature = nature
+            p.abilityID = abilityID
             p.heldItem = heldItem
             p.moveIDs = filteredMoves
             p.memo = memo
@@ -365,6 +386,59 @@ struct SpeciesPickerView: View {
             }
             .searchable(text: $searchText, prompt: "図鑑番号 / 名前")
             .navigationTitle("種族を選ぶ")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("閉じる") { dismiss() }
+                }
+            }
+        }
+    }
+}
+
+
+// MARK: - とくせいピッカー (日本語名/英語名/IDで検索可能)
+
+struct AbilityPickerView: View {
+    @Binding var selectedID: String
+    @Environment(\.dismiss) private var dismiss
+    @State private var searchText = ""
+
+    private var abilities: [AbilityEntry] {
+        let all = MasterData.shared.abilities
+        let q = searchText.trimmingCharacters(in: .whitespaces)
+        guard !q.isEmpty else { return all }
+        return all.filter {
+            $0.nameJa.localizedStandardContains(q) ||
+            $0.nameEn.localizedCaseInsensitiveContains(q) ||
+            $0.id.localizedCaseInsensitiveContains(q)
+        }
+    }
+
+    var body: some View {
+        NavigationStack {
+            List(abilities) { a in
+                Button {
+                    selectedID = a.id
+                    dismiss()
+                } label: {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(a.nameJa).foregroundStyle(.primary)
+                            Text(a.nameEn)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        if selectedID == a.id {
+                            Image(systemName: "checkmark")
+                                .foregroundStyle(.tint)
+                        }
+                    }
+                }
+            }
+            .searchable(text: $searchText, prompt: "とくせい名")
+            .navigationTitle("とくせいを選ぶ")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
