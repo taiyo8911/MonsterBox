@@ -1,4 +1,18 @@
 #!/usr/bin/env python3
+# build_frlg_master.py
+# MonsterBox
+#
+# Created by Taiyo KOSHIBA on 2026/06/21.
+#
+# 実行方法 (リポジトリルートで実行):
+#   python3 Scripts/build_frlg_master.py
+#
+# 出力先:
+#   MonsterBox/MonsterBox/Core/Master/frlg_master.json
+#   ※ 実行環境に合わせて下記の OUT_PATH を編集すること
+#
+# 必要環境:
+#   Python 3.x (標準ライブラリのみ) / ネット接続 (PokeAPI の CSV を取得)
 """
 FRLG (ファイアレッド・リーフグリーン / 第3世代) 用マスタJSON生成スクリプト
 
@@ -12,6 +26,7 @@ import urllib.request
 import csv
 import io
 import json
+import pathlib
 import sys
 
 BASE = "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/"
@@ -19,7 +34,12 @@ FRLG_VERSION_GROUP_ID = 7          # firered-leafgreen
 # 対象種族: 第1〜2世代 (1..251) ＋ デオキシス(386)
 INCLUDED_SPECIES = sorted(set(range(1, 252)) | {386})
 INCLUDED_SET = set(INCLUDED_SPECIES)
-OUT_PATH = "/mnt/user-data/outputs/frlg_master.json"
+# スクリプトの場所を起点にした相対パス
+# Scripts/build_frlg_master.py から見て ../MonsterBox/MonsterBox/Core/Master/frlg_master.json
+OUT_PATH = (
+    pathlib.Path(__file__).resolve().parent.parent
+    / "MonsterBox" / "MonsterBox" / "Core" / "Master" / "frlg_master.json"
+)
 
 # 第3世代の物理/特殊はタイプで決まる
 PHYSICAL_TYPES = {"normal", "fighting", "flying", "poison", "ground",

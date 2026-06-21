@@ -12,12 +12,17 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		DF54AABF2FDFA053001E3384 /* MonsterBox.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MonsterBox.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DF54AABF2FDFA053001E3384 /* MonsterBox.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = MonsterBox.app; path = "/Users/taiyo/Desktop/MonsterBox/build/Debug-iphoneos/MonsterBox.app"; sourceTree = "<absolute>"; };
 		DF54AAD82FDFA495001E3384 /* readme.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = readme.md; sourceTree = "<group>"; };
 		DF54AADA2FDFA51D001E3384 /* claude.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = claude.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		DF2A58C02FE7C34900BD3BD5 /* Scripts */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Scripts;
+			sourceTree = "<group>";
+		};
 		DF54AAC12FDFA053001E3384 /* MonsterBox */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = MonsterBox;
@@ -39,19 +44,11 @@
 		DF54AAB62FDFA053001E3384 = {
 			isa = PBXGroup;
 			children = (
+				DF2A58C02FE7C34900BD3BD5 /* Scripts */,
 				DF54AADA2FDFA51D001E3384 /* claude.md */,
 				DF54AAD82FDFA495001E3384 /* readme.md */,
 				DF54AAC12FDFA053001E3384 /* MonsterBox */,
-				DF54AAC02FDFA053001E3384 /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		DF54AAC02FDFA053001E3384 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				DF54AABF2FDFA053001E3384 /* MonsterBox.app */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -70,6 +67,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				DF2A58C02FE7C34900BD3BD5 /* Scripts */,
 				DF54AAC12FDFA053001E3384 /* MonsterBox */,
 			);
 			name = MonsterBox;
@@ -104,7 +102,7 @@
 			mainGroup = DF54AAB62FDFA053001E3384;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = DF54AAC02FDFA053001E3384 /* Products */;
+			productRefGroup = DF54AAB62FDFA053001E3384;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
