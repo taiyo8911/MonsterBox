@@ -26,7 +26,7 @@ struct PokemonEditorView: View {
     @State private var speciesDex: Int = 1
     @State private var nickname: String = ""
     @State private var gender: Gender = .genderless
-    @State private var level: Int = 5
+    @State private var level: Int = 50
     @State private var hp: Int = 0
     @State private var attack: Int = 0
     @State private var defense: Int = 0
@@ -116,7 +116,20 @@ struct PokemonEditorView: View {
 
     private var statusSection: some View {
         Section("能力") {
-            Stepper("レベル: \(level)", value: $level, in: 1...100)
+            HStack {
+                Text("レベル")
+                Spacer()
+                Stepper("", value: $level, in: 1...100)
+                    .labelsHidden()
+                TextField("1", value: $level, format: .number)
+                    .keyboardType(.numberPad)
+                    .multilineTextAlignment(.trailing)
+                    .frame(width: 60)
+            }
+            .onChange(of: level) { _, newValue in
+                if newValue < 1 { level = 1 }
+                else if newValue > 100 { level = 100 }
+            }
             statRow("HP", value: $hp)
             statRow("こうげき", value: $attack)
             statRow("ぼうぎょ", value: $defense)
