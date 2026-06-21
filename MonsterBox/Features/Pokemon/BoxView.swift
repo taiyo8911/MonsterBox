@@ -9,16 +9,17 @@ import SwiftUI
 import SwiftData
 
 // 14箱・6×5・左右切替のボックス画面。
-// タップ→メニュー (移動/強さを見る/編集する)。移動中は持ち替え式。
+// タップ→上段にデータを表示 (Binding で親へ通知)。
+// 長押し→アクションメニュー (移動/編集する/にがす)。移動中は持ち替え式。
 struct BoxView: View {
+    @Binding var selected: OwnedPokemon?
+
     @Environment(\.modelContext) private var modelContext
     @Query private var allPokemon: [OwnedPokemon]
     @Query(sort: \BoxInfo.boxNumber) private var boxes: [BoxInfo]
 
     @State private var currentBox: Int = 1
-    @State private var selected: OwnedPokemon?
-    @State private var showActionMenu = false
-    @State private var detailTarget: OwnedPokemon?
+    @State private var actionTarget: OwnedPokemon?
     @State private var editTarget: OwnedPokemon?
     @State private var renameText: String = ""
     @State private var showRename = false
@@ -35,22 +36,12 @@ struct BoxView: View {
     }
 
     var body: some View {
-        Group {
-            if allPokemon.isEmpty {
-                ContentUnavailableView(
-                    "ポケモンがいません",
-                    systemImage: "tray",
-                    description: Text("右上の + から登録できます。")
-                )
-            } else {
-                VStack(spacing: 8) {
-                    header
-                    grid
-                    Spacer(minLength: 0)
-                }
-                .padding(.horizontal)
-            }
+        VStack(spacing: 8) {
+            header
+            grid
+            Spacer(minLength: 0)
         }
+        .padding(.horizontal)
         .safeAreaInset(edge: .bottom) {
             if move.isMoving {
                 movingFooter
@@ -61,18 +52,17 @@ struct BoxView: View {
         }
         .animation(.easeInOut(duration: 0.2), value: move.isMoving)
         .confirmationDialog(
-            selected?.displayName ?? "",
-            isPresented: $showActionMenu,
+            actionTarget?.displayName ?? "",
+            isPresented: Binding(
+                get: { actionTarget != nil },
+                set: { if !$0 { actionTarget = nil } }
+            ),
             titleVisibility: .visible
         ) {
-            Button("移動") { startMoveSelected() }
-            Button("強さを見る") { detailTarget = selected }
-            Button("編集する") { editTarget = selected }
-            Button("にがす", role: .destructive) { releaseTarget = selected }
-            Button("キャンセル", role: .cancel) { selected = nil }
-        }
-        .sheet(item: $detailTarget) { p in
-            NavigationStack { PokemonDetailView(pokemon: p) }
+            Button("移動") { startMoveActionTarget() }
+            Button("編集する") { editTarget = actionTarget }
+            Button("にがす", role: .destructive) { releaseTarget = actionTarget }
+            Button("キャンセル", role: .cancel) { actionTarget = nil }
         }
         .sheet(item: $editTarget) { p in
             NavigationStack { PokemonEditorView(mode: .edit(p)) }
@@ -101,7 +91,9 @@ struct BoxView: View {
         modelContext.delete(p)
         try? modelContext.save()
         releaseTarget = nil
-        selected = nil
+        if selected?.persistentModelID == p.persistentModelID {
+            selected = nil
+        }
     }
 
     // MARK: ヘッダ (名前 + 左右ボタン)
@@ -154,9 +146,10 @@ struct BoxView: View {
         )
         .contentShape(Rectangle())
         .onTapGesture { handleTap(slot: slot, occupant: occupant) }
+        .onLongPressGesture(minimumDuration: 0.5) { handleLongPress(occupant: occupant) }
     }
 
-    // MARK: 移動中フッタ (safeAreaInset でグリッドの上に重ねない位置に表示)
+    // MARK: 移動中フッタ
 
     @ViewBuilder
     private var movingFooter: some View {
@@ -174,7 +167,7 @@ struct BoxView: View {
         }
     }
 
-    // MARK: タップ処理
+    // MARK: タップ / 長押し処理
 
     private func handleTap(slot: Int, occupant: OwnedPokemon?) {
         if move.isMoving {
@@ -182,15 +175,20 @@ struct BoxView: View {
             try? modelContext.save()
             return
         }
-        guard let occupant else { return }
         selected = occupant
-        showActionMenu = true
     }
 
-    private func startMoveSelected() {
-        guard let p = selected else { return }
+    private func handleLongPress(occupant: OwnedPokemon?) {
+        guard !move.isMoving, let p = occupant else { return }
+        selected = p
+        actionTarget = p
+    }
+
+    private func startMoveActionTarget() {
+        guard let p = actionTarget else { return }
         move.beginMove(p)
         try? modelContext.save()
+        actionTarget = nil
         selected = nil
     }
 

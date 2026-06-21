@@ -8,21 +8,11 @@
 import SwiftUI
 import SwiftData
 
-// ホーム: 一覧⇄ボックス の切替ビュー。
-// ツールバーに「+」で新規登録 (PokemonEditorView .create) を開く。
+// ホーム: 上段=選択中ポケモンの詳細パネル / 下段=ボックス。
+// 下段でタップ→上段に表示、長押し→アクションメニュー。
+// ツールバー「+」で新規登録 (PokemonEditorView .create) を開く。
 struct PokemonHomeView: View {
-    enum Tab: String, CaseIterable, Identifiable {
-        case list, box
-        var id: String { rawValue }
-        var label: String {
-            switch self {
-            case .list: return "一覧"
-            case .box: return "ボックス"
-            }
-        }
-    }
-
-    @State private var tab: Tab = .list
+    @State private var selected: OwnedPokemon?
     @State private var showEditor = false
     @State private var showFullAlert = false
     @Query private var allPokemon: [OwnedPokemon]
@@ -33,22 +23,13 @@ struct PokemonHomeView: View {
 
     var body: some View {
         NavigationStack {
-            Group {
-                switch tab {
-                case .list: PokemonListView()
-                case .box: BoxView()
-                }
+            VStack(spacing: 12) {
+                detailArea
+                BoxView(selected: $selected)
             }
             .navigationTitle("MonsterBox")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .principal) {
-                    Picker("", selection: $tab) {
-                        ForEach(Tab.allCases) { Text($0.label).tag($0) }
-                    }
-                    .pickerStyle(.segmented)
-                    .frame(width: 200)
-                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         if isFull {
@@ -71,12 +52,29 @@ struct PokemonHomeView: View {
             } message: {
                 Text("登録できる上限 (\(AppSeed.boxCount * AppSeed.boxCapacity) 体) に達しています。不要な個体を削除してから追加してください")
             }
+            .onChange(of: allPokemon) { _, newValue in
+                if let s = selected,
+                   !newValue.contains(where: { $0.persistentModelID == s.persistentModelID }) {
+                    selected = nil
+                }
+            }
+        }
+    }
+
+    // MARK: 上段詳細エリア (未選択時は空)
+
+    @ViewBuilder
+    private var detailArea: some View {
+        if let p = selected {
+            PokemonDetailPanel(pokemon: p)
+                .padding(.horizontal)
+        } else {
+            Color.clear
+                .frame(height: 1)
         }
     }
 }
 
-
-// プレビュー
 #Preview {
     PokemonHomeView()
 }
