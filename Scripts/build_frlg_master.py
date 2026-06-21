@@ -8,7 +8,7 @@
 #   python3 Scripts/build_frlg_master.py
 #
 # 出力先:
-#   MonsterBox/MonsterBox/Core/Master/frlg_master.json
+#   MonsterBox/Core/Master/frlg_master.json
 #   ※ 実行環境に合わせて下記の OUT_PATH を編集すること
 #
 # 必要環境:
@@ -35,10 +35,10 @@ FRLG_VERSION_GROUP_ID = 7          # firered-leafgreen
 INCLUDED_SPECIES = sorted(set(range(1, 252)) | {386})
 INCLUDED_SET = set(INCLUDED_SPECIES)
 # スクリプトの場所を起点にした相対パス
-# Scripts/build_frlg_master.py から見て ../MonsterBox/MonsterBox/Core/Master/frlg_master.json
+# Scripts/build_frlg_master.py から見て ../MonsterBox/Core/Master/frlg_master.json
 OUT_PATH = (
     pathlib.Path(__file__).resolve().parent.parent
-    / "MonsterBox" / "MonsterBox" / "Core" / "Master" / "frlg_master.json"
+    / "MonsterBox" / "Core" / "Master" / "frlg_master.json"
 )
 
 # 第3世代の物理/特殊はタイプで決まる
@@ -72,6 +72,8 @@ def main():
     version_groups = fetch_csv("version_groups.csv")
     types_past = fetch_csv("pokemon_types_past.csv")
     move_changelog = fetch_csv("move_changelog.csv")
+    abilities = fetch_csv("abilities.csv")
+    ability_names = fetch_csv("ability_names.csv")
     print("Done. Building ...")
 
     # 言語ID (日本語=ja-Hrkt 優先, 無ければ ja / 英語=en)
@@ -191,6 +193,23 @@ def main():
         elif lid == EN:
             move_en[mid] = n["name"]
 
+    # 特性 (とくせい): 第3世代までに存在したものに限定。隠れ特性はFRLGに存在しないので扱わない。
+    ability_info = {}
+    for a in abilities:
+        if int(a["generation_id"]) > TARGET_GEN:
+            continue
+        ability_info[int(a["id"])] = {"identifier": a["identifier"]}
+    ability_ja, ability_en = {}, {}
+    for n in ability_names:
+        aid = int(n["ability_id"])
+        if aid not in ability_info:
+            continue
+        lid = int(n["local_language_id"])
+        if lid == JA:
+            ability_ja[aid] = n["name"]
+        elif lid == EN:
+            ability_en[aid] = n["name"]
+
     # 学習セット: FRLG(vg=7)を優先。FRLGに学習データが無い種族のみ、
     # 第3世代の他バージョン(emerald=6, ruby-sapphire=5)で補完する。
     valid_pokemon_ids = set(species_to_pokemon.values())
@@ -282,6 +301,16 @@ def main():
             "pp": info["pp"],
         })
 
+    # 特性は日本語名(あればJA、無ければEN)でソートして出力
+    out_abilities = []
+    for aid in sorted(ability_info.keys(),
+                      key=lambda i: ability_ja.get(i, ability_en.get(i, ""))):
+        out_abilities.append({
+            "id": ability_info[aid]["identifier"],
+            "name_ja": ability_ja.get(aid, ""),
+            "name_en": ability_en.get(aid, ""),
+        })
+
     result = {
         "meta": {
             "source": "PokeAPI (veekun data)",
@@ -296,11 +325,13 @@ def main():
                 "types": len(out_types),
                 "species": len(out_species),
                 "moves": len(out_moves),
+                "abilities": len(out_abilities),
             },
         },
         "types": out_types,
         "species": out_species,
         "moves": out_moves,
+        "abilities": out_abilities,
     }
 
     with open(OUT_PATH, "w", encoding="utf-8") as f:
@@ -309,6 +340,7 @@ def main():
     print("counts:", result["meta"]["counts"])
     print("sample species:", json.dumps(out_species[0], ensure_ascii=False)[:300])
     print("sample move:", json.dumps(out_moves[0], ensure_ascii=False))
+    print("sample ability:", json.dumps(out_abilities[0], ensure_ascii=False))
     print("wrote:", OUT_PATH)
 
 

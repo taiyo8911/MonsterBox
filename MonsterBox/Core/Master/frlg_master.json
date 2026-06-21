@@ -11,7 +11,8 @@
     "counts": {
       "types": 17,
       "species": 252,
-      "moves": 336
+      "moves": 336,
+      "abilities": 76
     }
   },
   "types": [
@@ -76316,6 +76317,388 @@
       "power": 140,
       "accuracy": 90,
       "pp": 5
+    }
+  ],
+  "abilities": [
+    {
+      "id": "stench",
+      "name_ja": "あくしゅう",
+      "name_en": "Stench"
+    },
+    {
+      "id": "thick-fat",
+      "name_ja": "あついしぼう",
+      "name_en": "Thick Fat"
+    },
+    {
+      "id": "rain-dish",
+      "name_ja": "あめうけざら",
+      "name_en": "Rain Dish"
+    },
+    {
+      "id": "drizzle",
+      "name_ja": "あめふらし",
+      "name_en": "Drizzle"
+    },
+    {
+      "id": "arena-trap",
+      "name_ja": "ありじごく",
+      "name_en": "Arena Trap"
+    },
+    {
+      "id": "intimidate",
+      "name_ja": "いかく",
+      "name_en": "Intimidate"
+    },
+    {
+      "id": "rock-head",
+      "name_ja": "いしあたま",
+      "name_en": "Rock Head"
+    },
+    {
+      "id": "hyper-cutter",
+      "name_ja": "かいりきバサミ",
+      "name_en": "Hyper Cutter"
+    },
+    {
+      "id": "shadow-tag",
+      "name_ja": "かげふみ",
+      "name_en": "Shadow Tag"
+    },
+    {
+      "id": "speed-boost",
+      "name_ja": "かそく",
+      "name_en": "Speed Boost"
+    },
+    {
+      "id": "sturdy",
+      "name_ja": "がんじょう",
+      "name_en": "Sturdy"
+    },
+    {
+      "id": "suction-cups",
+      "name_ja": "きゅうばん",
+      "name_en": "Suction Cups"
+    },
+    {
+      "id": "torrent",
+      "name_ja": "げきりゅう",
+      "name_en": "Torrent"
+    },
+    {
+      "id": "guts",
+      "name_ja": "こんじょう",
+      "name_en": "Guts"
+    },
+    {
+      "id": "rough-skin",
+      "name_ja": "さめはだ",
+      "name_en": "Rough Skin"
+    },
+    {
+      "id": "natural-cure",
+      "name_ja": "しぜんかいふく",
+      "name_en": "Natural Cure"
+    },
+    {
+      "id": "damp",
+      "name_ja": "しめりけ",
+      "name_en": "Damp"
+    },
+    {
+      "id": "white-smoke",
+      "name_ja": "しろいけむり",
+      "name_en": "White Smoke"
+    },
+    {
+      "id": "overgrow",
+      "name_ja": "しんりょく",
+      "name_en": "Overgrow"
+    },
+    {
+      "id": "limber",
+      "name_ja": "じゅうなん",
+      "name_en": "Limber"
+    },
+    {
+      "id": "magnet-pull",
+      "name_ja": "じりょく",
+      "name_en": "Magnet Pull"
+    },
+    {
+      "id": "swift-swim",
+      "name_ja": "すいすい",
+      "name_en": "Swift Swim"
+    },
+    {
+      "id": "sand-stream",
+      "name_ja": "すなおこし",
+      "name_en": "Sand Stream"
+    },
+    {
+      "id": "sand-veil",
+      "name_ja": "すながくれ",
+      "name_en": "Sand Veil"
+    },
+    {
+      "id": "keen-eye",
+      "name_ja": "するどいめ",
+      "name_en": "Keen Eye"
+    },
+    {
+      "id": "inner-focus",
+      "name_ja": "せいしんりょく",
+      "name_en": "Inner Focus"
+    },
+    {
+      "id": "static",
+      "name_ja": "せいでんき",
+      "name_en": "Static"
+    },
+    {
+      "id": "shed-skin",
+      "name_ja": "だっぴ",
+      "name_en": "Shed Skin"
+    },
+    {
+      "id": "huge-power",
+      "name_ja": "ちからもち",
+      "name_en": "Huge Power"
+    },
+    {
+      "id": "volt-absorb",
+      "name_ja": "ちくでん",
+      "name_en": "Volt Absorb"
+    },
+    {
+      "id": "water-absorb",
+      "name_ja": "ちょすい",
+      "name_en": "Water Absorb"
+    },
+    {
+      "id": "forecast",
+      "name_ja": "てんきや",
+      "name_en": "Forecast"
+    },
+    {
+      "id": "serene-grace",
+      "name_ja": "てんのめぐみ",
+      "name_en": "Serene Grace"
+    },
+    {
+      "id": "poison-point",
+      "name_ja": "どくのトゲ",
+      "name_en": "Poison Point"
+    },
+    {
+      "id": "oblivious",
+      "name_ja": "どんかん",
+      "name_en": "Oblivious"
+    },
+    {
+      "id": "truant",
+      "name_ja": "なまけ",
+      "name_en": "Truant"
+    },
+    {
+      "id": "run-away",
+      "name_ja": "にげあし",
+      "name_en": "Run Away"
+    },
+    {
+      "id": "sticky-hold",
+      "name_ja": "ねんちゃく",
+      "name_en": "Sticky Hold"
+    },
+    {
+      "id": "illuminate",
+      "name_ja": "はっこう",
+      "name_en": "Illuminate"
+    },
+    {
+      "id": "early-bird",
+      "name_ja": "はやおき",
+      "name_en": "Early Bird"
+    },
+    {
+      "id": "hustle",
+      "name_ja": "はりきり",
+      "name_en": "Hustle"
+    },
+    {
+      "id": "drought",
+      "name_ja": "ひでり",
+      "name_en": "Drought"
+    },
+    {
+      "id": "lightning-rod",
+      "name_ja": "ひらいしん",
+      "name_en": "Lightning Rod"
+    },
+    {
+      "id": "compound-eyes",
+      "name_ja": "ふくがん",
+      "name_en": "Compound Eyes"
+    },
+    {
+      "id": "marvel-scale",
+      "name_ja": "ふしぎなうろこ",
+      "name_en": "Marvel Scale"
+    },
+    {
+      "id": "wonder-guard",
+      "name_ja": "ふしぎなまもり",
+      "name_en": "Wonder Guard"
+    },
+    {
+      "id": "insomnia",
+      "name_ja": "ふみん",
+      "name_en": "Insomnia"
+    },
+    {
+      "id": "levitate",
+      "name_ja": "ふゆう",
+      "name_en": "Levitate"
+    },
+    {
+      "id": "color-change",
+      "name_ja": "へんしょく",
+      "name_en": "Color Change"
+    },
+    {
+      "id": "effect-spore",
+      "name_ja": "ほうし",
+      "name_en": "Effect Spore"
+    },
+    {
+      "id": "flame-body",
+      "name_ja": "ほのおのからだ",
+      "name_en": "Flame Body"
+    },
+    {
+      "id": "soundproof",
+      "name_ja": "ぼうおん",
+      "name_en": "Soundproof"
+    },
+    {
+      "id": "water-veil",
+      "name_ja": "みずのベール",
+      "name_en": "Water Veil"
+    },
+    {
+      "id": "swarm",
+      "name_ja": "むしのしらせ",
+      "name_en": "Swarm"
+    },
+    {
+      "id": "immunity",
+      "name_ja": "めんえき",
+      "name_en": "Immunity"
+    },
+    {
+      "id": "blaze",
+      "name_ja": "もうか",
+      "name_en": "Blaze"
+    },
+    {
+      "id": "pickup",
+      "name_ja": "ものひろい",
+      "name_en": "Pickup"
+    },
+    {
+      "id": "flash-fire",
+      "name_ja": "もらいび",
+      "name_en": "Flash Fire"
+    },
+    {
+      "id": "vital-spirit",
+      "name_ja": "やるき",
+      "name_en": "Vital Spirit"
+    },
+    {
+      "id": "chlorophyll",
+      "name_ja": "ようりょくそ",
+      "name_en": "Chlorophyll"
+    },
+    {
+      "id": "shield-dust",
+      "name_ja": "りんぷん",
+      "name_en": "Shield Dust"
+    },
+    {
+      "id": "air-lock",
+      "name_ja": "エアロック",
+      "name_en": "Air Lock"
+    },
+    {
+      "id": "battle-armor",
+      "name_ja": "カブトアーマー",
+      "name_en": "Battle Armor"
+    },
+    {
+      "id": "clear-body",
+      "name_ja": "クリアボディ",
+      "name_en": "Clear Body"
+    },
+    {
+      "id": "shell-armor",
+      "name_ja": "シェルアーマー",
+      "name_en": "Shell Armor"
+    },
+    {
+      "id": "synchronize",
+      "name_ja": "シンクロ",
+      "name_en": "Synchronize"
+    },
+    {
+      "id": "trace",
+      "name_ja": "トレース",
+      "name_en": "Trace"
+    },
+    {
+      "id": "cloud-nine",
+      "name_ja": "ノーてんき",
+      "name_en": "Cloud Nine"
+    },
+    {
+      "id": "plus",
+      "name_ja": "プラス",
+      "name_en": "Plus"
+    },
+    {
+      "id": "pressure",
+      "name_ja": "プレッシャー",
+      "name_en": "Pressure"
+    },
+    {
+      "id": "liquid-ooze",
+      "name_ja": "ヘドロえき",
+      "name_en": "Liquid Ooze"
+    },
+    {
+      "id": "minus",
+      "name_ja": "マイナス",
+      "name_en": "Minus"
+    },
+    {
+      "id": "own-tempo",
+      "name_ja": "マイペース",
+      "name_en": "Own Tempo"
+    },
+    {
+      "id": "magma-armor",
+      "name_ja": "マグマのよろい",
+      "name_en": "Magma Armor"
+    },
+    {
+      "id": "cute-charm",
+      "name_ja": "メロメロボディ",
+      "name_en": "Cute Charm"
+    },
+    {
+      "id": "pure-power",
+      "name_ja": "ヨガパワー",
+      "name_en": "Pure Power"
     }
   ]
 }
