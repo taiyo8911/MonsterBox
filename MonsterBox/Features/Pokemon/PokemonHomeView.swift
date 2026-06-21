@@ -69,7 +69,7 @@ struct PokemonHomeView: View {
             .alert("ボックスが満杯です", isPresented: $showFullAlert) {
                 Button("OK", role: .cancel) {}
             } message: {
-                Text("登録できる上限 (\(AppSeed.boxCount * AppSeed.boxCapacity) 体) に達しています。不要な個体を削除してから追加してください。")
+                Text("登録できる上限 (\(AppSeed.boxCount * AppSeed.boxCapacity) 体) に達しています。不要な個体を削除してから追加してください")
             }
         }
     }
