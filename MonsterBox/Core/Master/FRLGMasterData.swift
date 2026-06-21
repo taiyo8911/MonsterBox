@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - マスタデータ (frlg_master.json / 読み取り専用)
 //
-// 同梱JSONの3ブロック (types / species / moves) に対応する Codable 構造体と、
+// 同梱JSONの4ブロック (types / species / moves / abilities) に対応する Codable 構造体と、
 // 起動時に読み込んで参照用の辞書・ヘルパーを提供するローダ。
 // JSONはsnake_case (name_ja など) なので .convertFromSnakeCase で取り込む。
 
@@ -45,10 +45,17 @@ struct Move: Codable, Identifiable, Hashable {
     let pp: Int?
 }
 
+struct AbilityEntry: Codable, Identifiable, Hashable {
+    let id: String          // 英語スラッグ (例: "overgrow")
+    let nameJa: String
+    let nameEn: String
+}
+
 private struct MasterFile: Codable {
     let types: [TypeEntry]
     let species: [Species]
     let moves: [Move]
+    let abilities: [AbilityEntry]
 }
 
 /// 同梱 frlg_master.json を読み込み、参照APIを提供するシングルトン。
@@ -58,10 +65,12 @@ final class MasterData {
     let types: [TypeEntry]
     let species: [Species]       // dex昇順
     let moves: [Move]
+    let abilities: [AbilityEntry] // 日本語名の五十音順 (JSON生成時にソート済み)
 
     let typeByID: [String: TypeEntry]
     let speciesByDex: [Int: Species]
     let moveByID: [String: Move]
+    let abilityByID: [String: AbilityEntry]
 
     private init() {
         guard
@@ -78,9 +87,11 @@ final class MasterData {
         self.types = file.types
         self.species = file.species.sorted { $0.dex < $1.dex }
         self.moves = file.moves
+        self.abilities = file.abilities
         self.typeByID = Dictionary(uniqueKeysWithValues: file.types.map { ($0.id, $0) })
         self.speciesByDex = Dictionary(uniqueKeysWithValues: file.species.map { ($0.dex, $0) })
         self.moveByID = Dictionary(uniqueKeysWithValues: file.moves.map { ($0.id, $0) })
+        self.abilityByID = Dictionary(uniqueKeysWithValues: file.abilities.map { ($0.id, $0) })
     }
 
     // MARK: 参照ヘルパー
@@ -88,12 +99,16 @@ final class MasterData {
     func species(dex: Int) -> Species? { speciesByDex[dex] }
     func move(id: String) -> Move? { moveByID[id] }
     func type(id: String) -> TypeEntry? { typeByID[id] }
+    func ability(id: String) -> AbilityEntry? { abilityByID[id] }
 
     /// 技ID → 日本語名 (見つからなければIDを返す)
     func moveNameJa(_ id: String) -> String { moveByID[id]?.nameJa ?? id }
 
     /// タイプID → 日本語名
     func typeNameJa(_ id: String) -> String { typeByID[id]?.nameJa ?? id }
+
+    /// 特性ID → 日本語名 (見つからなければIDを返す)
+    func abilityNameJa(_ id: String) -> String { abilityByID[id]?.nameJa ?? id }
 
     /// その種族が覚えられる技 (重複なし・日本語名順)。登録フォームの技候補に使う。
     func learnableMoves(forDex dex: Int) -> [Move] {
