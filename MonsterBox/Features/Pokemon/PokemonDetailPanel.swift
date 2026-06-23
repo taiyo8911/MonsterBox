@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 // 上段に表示する個体詳細パネル。左右2カラム構成。
 // 左: Lv/名前/性別 → スプライト → タイプ → おぼえている技 (最大4)
@@ -155,3 +156,32 @@ struct MoveRow: View {
         }
     }
 }
+// MARK: - Preview
+
+#Preview("選択あり") {
+    let container = try! ModelContainer(
+        for: OwnedPokemon.self,
+        configurations: ModelConfiguration(isStoredInMemoryOnly: true)
+    )
+    let sample = OwnedPokemon(
+        speciesDex: 4,          // ヒトカゲ
+        nickname: "",
+        gender: .male,
+        level: 16,
+        hp: 22, attack: 14, defense: 12,
+        spAttack: 16, spDefense: 13, speed: 18,
+        nature: .modest,
+        abilityID: "blaze",
+        moveIDs: ["ember", "scratch", "growl"]
+    )
+    container.mainContext.insert(sample)
+    return PokemonDetailPanel(pokemon: sample)
+        .padding()
+        .modelContainer(container)
+}
+
+#Preview("未選択") {
+    PokemonDetailPanel(pokemon: nil)
+        .padding()
+}
+
