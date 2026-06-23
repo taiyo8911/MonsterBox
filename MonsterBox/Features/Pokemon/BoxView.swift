@@ -8,11 +8,23 @@
 import SwiftUI
 import SwiftData
 
+// 空マスの座標 (box, slot) を扱う値型。
+// Binding と .sheet(item:) で使えるよう Identifiable に準拠。
+struct EmptySlot: Identifiable, Equatable {
+    let box: Int
+    let slot: Int
+    var id: Int { box * 100 + slot }
+}
+
 // 14箱・6×5・左右切替のボックス画面。
 // タップ→上段にデータを表示 (Binding で親へ通知)。
-// 長押し→アクションメニュー (つかむ/つよさをかえる/にがす)。移動中は持ち替え式。
+// 同一個体を再タップ→アクションメニュー。長押しでもメニュー。
+// 空マスタップ→選択解除 + 空マス座標を親に通知 (+ボタン押下時の保存先)。
 struct BoxView: View {
     @Binding var selected: OwnedPokemon?
+    // 空マスをタップしたときの座標 (新規追加時の保存先)。
+    // 空マス以外を選択した・選択解除した場合は nil。
+    @Binding var emptyTarget: EmptySlot?
 
     @Environment(\.modelContext) private var modelContext
     @Query private var allPokemon: [OwnedPokemon]
@@ -96,6 +108,7 @@ struct BoxView: View {
         if selected?.persistentModelID == p.persistentModelID {
             selected = nil
         }
+        emptyTarget = nil
     }
 
     // MARK: ヘッダ (名前 + 左右ボタン)
@@ -136,6 +149,22 @@ struct BoxView: View {
                 cell(at: slot)
             }
         }
+        .contentShape(Rectangle())
+        .gesture(swipeBoxGesture)
+    }
+
+    // 水平スワイプでボックス切替。移動中・しきい値未満は無視。
+    private var swipeBoxGesture: some Gesture {
+        DragGesture(minimumDistance: 24)
+            .onEnded { value in
+                guard !move.isMoving else { return }
+                let dx = value.translation.width
+                let dy = value.translation.height
+                guard abs(dx) > 50, abs(dx) > abs(dy) else { return }
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    if dx < 0 { gotoNext() } else { gotoPrev() }
+                }
+            }
     }
 
     private func cell(at slot: Int) -> some View {
@@ -177,8 +206,19 @@ struct BoxView: View {
             try? modelContext.save()
             return
         }
-        guard let p = occupant else { return }
-        selected = p
+        guard let p = occupant else {
+            // 空マス: 上段クリア + 追加保存先として座標を親に通知
+            selected = nil
+            emptyTarget = EmptySlot(box: currentBox, slot: slot)
+            return
+        }
+        // 同一個体を再タップ: アクションメニュー / 別個体: 選択切替
+        if selected?.persistentModelID == p.persistentModelID {
+            actionTarget = p
+        } else {
+            selected = p
+        }
+        emptyTarget = nil
     }
 
     private func handleLongPress(occupant: OwnedPokemon?) {
@@ -200,10 +240,12 @@ struct BoxView: View {
 
     private func gotoPrev() {
         currentBox = currentBox == 1 ? AppSeed.boxCount : currentBox - 1
+        emptyTarget = nil
     }
 
     private func gotoNext() {
         currentBox = currentBox == AppSeed.boxCount ? 1 : currentBox + 1
+        emptyTarget = nil
     }
 
     // MARK: ボックス名変更
@@ -218,5 +260,5 @@ struct BoxView: View {
 
 
 #Preview {
-    BoxView(selected: .constant(nil))
+    BoxView(selected: .constant(nil), emptyTarget: .constant(nil))
 }

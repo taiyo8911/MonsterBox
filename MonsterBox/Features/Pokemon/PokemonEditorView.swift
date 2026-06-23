@@ -18,6 +18,8 @@ struct PokemonEditorView: View {
     }
 
     let mode: Mode
+    // .create 時に保存先を指定する。nil なら findFreeSlot() で最初の空きへ。
+    var targetSlot: (box: Int, slot: Int)? = nil
 
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
@@ -36,7 +38,6 @@ struct PokemonEditorView: View {
     @State private var nature: Nature = .hardy
     @State private var abilityID: String = ""
     @State private var moveIDs: [String] = []
-    @State private var memo: String = ""
 
     @State private var showSpeciesPicker = false
     @State private var showAbilityPicker = false
@@ -57,7 +58,6 @@ struct PokemonEditorView: View {
             profileSection
             statusSection
             movesSection
-            memoSection
         }
         .navigationTitle(isEdit ? "編集する" : "新規登録")
         .navigationBarTitleDisplayMode(.inline)
@@ -241,13 +241,6 @@ struct PokemonEditorView: View {
         .disabled(disabled)
     }
 
-    private var memoSection: some View {
-        Section("メモ") {
-            TextField("自由記入", text: $memo, axis: .vertical)
-                .lineLimit(2...6)
-        }
-    }
-
     // MARK: - ロード / 保存
 
     private func loadIfNeeded() {
@@ -267,7 +260,6 @@ struct PokemonEditorView: View {
             nature = p.nature
             abilityID = p.abilityID
             moveIDs = p.moveIDs
-            memo = p.memo
         }
     }
 
@@ -290,7 +282,7 @@ struct PokemonEditorView: View {
 
         switch mode {
         case .create:
-            guard let (box, slot) = findFreeSlot() else { return }
+            guard let (box, slot) = targetSlot ?? findFreeSlot() else { return }
             let new = OwnedPokemon(
                 speciesDex: speciesDex,
                 nickname: nickname,
@@ -303,8 +295,7 @@ struct PokemonEditorView: View {
                 moveIDs: filteredMoves,
                 boxNumber: box,
                 slot: slot,
-                isShiny: false,
-                memo: memo
+                isShiny: false
             )
             modelContext.insert(new)
         case .edit(let p):
@@ -317,7 +308,6 @@ struct PokemonEditorView: View {
             p.nature = nature
             p.abilityID = abilityID
             p.moveIDs = filteredMoves
-            p.memo = memo
         }
         try? modelContext.save()
         dismiss()

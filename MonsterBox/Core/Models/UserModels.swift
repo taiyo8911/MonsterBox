@@ -86,7 +86,6 @@ final class OwnedPokemon {
     var boxNumber: Int            // 1...14
     var slot: Int                 // 0...29
     var isShiny: Bool
-    var memo: String
     var createdAt: Date
 
     init(
@@ -101,8 +100,7 @@ final class OwnedPokemon {
         moveIDs: [String] = [],
         boxNumber: Int = 1,
         slot: Int = 0,
-        isShiny: Bool = false,
-        memo: String = ""
+        isShiny: Bool = false
     ) {
         self.speciesDex = speciesDex
         self.nickname = nickname
@@ -116,7 +114,6 @@ final class OwnedPokemon {
         self.boxNumber = boxNumber
         self.slot = slot
         self.isShiny = isShiny
-        self.memo = memo
         self.createdAt = .now
     }
 }

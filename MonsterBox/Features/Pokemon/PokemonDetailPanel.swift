@@ -8,8 +8,8 @@
 import SwiftUI
 
 // 上段に表示する個体詳細パネル。左右2カラム構成。
-// 左: Lv/名前/性別 → スプライト → タイプ → せいかく → とくせい
-// 右: 能力6種 → 技 (最大4)
+// 左: Lv/名前/性別 → スプライト → タイプ → おぼえている技 (最大4)
+// 右: 能力6種 → せいかく → とくせい
 // 未選択時 (pokemon == nil) は枠だけ残して中身を空にする (C案: プレースホルダ)。
 struct PokemonDetailPanel: View {
     let pokemon: OwnedPokemon?
@@ -51,9 +51,21 @@ struct PokemonDetailPanel: View {
             HStack(spacing: 4) {
                 ForEach(pokemon.typeIDs, id: \.self) { TypeBadge(typeID: $0) }
             }
+            .frame(maxWidth: .infinity, alignment: .center)
 
-            labeled("せいかく", value: pokemon.nature.nameJa)
-            labeled("とくせい", value: pokemon.ability?.nameJa ?? "—")
+            if pokemon.moveIDs.isEmpty {
+                Text("技 —")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            } else {
+                ForEach(pokemon.moveIDs, id: \.self) { id in
+                    if let move = master.move(id: id) {
+                        MoveRow(move: move)
+                    } else {
+                        Text(id).font(.caption).foregroundStyle(.secondary)
+                    }
+                }
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -81,19 +93,8 @@ struct PokemonDetailPanel: View {
 
             Divider().padding(.vertical, 2)
 
-            if pokemon.moveIDs.isEmpty {
-                Text("技 —")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            } else {
-                ForEach(pokemon.moveIDs, id: \.self) { id in
-                    if let move = master.move(id: id) {
-                        MoveRow(move: move)
-                    } else {
-                        Text(id).font(.caption).foregroundStyle(.secondary)
-                    }
-                }
-            }
+            labeled("せいかく", value: pokemon.nature.nameJa)
+            labeled("とくせい", value: pokemon.ability?.nameJa ?? "—")
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -121,7 +122,7 @@ private struct GenderMark: View {
         case .female:
             Text("♀").foregroundStyle(.pink).font(.subheadline.bold())
         case .genderless:
-            Text("—").foregroundStyle(.secondary).font(.subheadline)
+            EmptyView()
         }
     }
 }
