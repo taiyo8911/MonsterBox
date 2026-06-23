@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-// ボックスの1マス。
-// 個体がいれば SpriteImage、空きマスなら薄い枠、選択中ならハイライト。
+// ボックスの1マス
+// 個体がいればSpriteImage、空きマスなら薄い枠、選択中ならハイライト
 struct BoxCell: View {
     let pokemon: OwnedPokemon?
     let isSelected: Bool

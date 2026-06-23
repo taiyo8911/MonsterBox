@@ -8,10 +8,10 @@
 import SwiftUI
 import SwiftData
 
-// 上下2段構成の個体詳細パネル。
+// 上下2段構成の個体詳細パネル
 // 上段: 左=スプライト/Lv/名前/性別/タイプ、右=能力6種(1列) + せいかく/とくせい
 // 下段: おぼえている技 (最大4、全幅で タイプ/威力/命中/PP を表示)
-// pokemon の有無に関わらず常に同じViewツリーを描画し、空の場合は各セルがプレースホルダで高さを保つ。
+// pokemonの有無に関わらず常に同じViewを描画し、空の場合は各セルがプレースホルダで高さを保つ
 struct PokemonDetailPanel: View {
     let pokemon: OwnedPokemon?
 

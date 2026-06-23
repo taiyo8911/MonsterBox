@@ -8,22 +8,22 @@
 import SwiftUI
 import SwiftData
 
-// 空マスの座標 (box, slot) を扱う値型。
-// Binding と .sheet(item:) で使えるよう Identifiable に準拠。
+// 空マスの座標 (box, slot) を扱う値型
+// Binding と .sheet(item:) で使えるよう Identifiable に準拠
 struct EmptySlot: Identifiable, Equatable {
     let box: Int
     let slot: Int
     var id: Int { box * 100 + slot }
 }
 
-// 14箱・6×5・左右切替のボックス画面。
-// タップ→上段にデータを表示 (Binding で親へ通知)。
-// 同一個体を再タップ→アクションメニュー。長押しでもメニュー。
-// 空マスタップ→選択解除 + 空マス座標を親に通知 (+ボタン押下時の保存先)。
+// 14箱・6×5・左右切替のボックス画面
+// タップ→上段にデータを表示 (Binding で親へ通知)
+// 同一個体を再タップ→アクションメニュー。長押しでもメニュー
+// 空マスタップ→選択解除 + 空マス座標を親に通知 (+ボタン押下時の保存先)
 struct BoxView: View {
     @Binding var selected: OwnedPokemon?
-    // 空マスをタップしたときの座標 (新規追加時の保存先)。
-    // 空マス以外を選択した・選択解除した場合は nil。
+    // 空マスをタップしたときの座標 (新規追加時の保存先)
+    // 空マス以外を選択した・選択解除した場合は nil
     @Binding var emptyTarget: EmptySlot?
 
     @Environment(\.modelContext) private var modelContext
@@ -153,7 +153,7 @@ struct BoxView: View {
         .gesture(swipeBoxGesture)
     }
 
-    // 水平スワイプでボックス切替。移動中・しきい値未満は無視。
+    // 水平スワイプでボックス切替。移動中・しきい値未満は無視
     private var swipeBoxGesture: some Gesture {
         DragGesture(minimumDistance: 24)
             .onEnded { value in

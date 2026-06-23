@@ -8,9 +8,9 @@
 import SwiftUI
 import SwiftData
 
-// ホーム: 上段=選択中ポケモンの詳細パネル / 下段=ボックス。
-// 下段でタップ→上段に表示、長押し→アクションメニュー。
-// ツールバー「+」で新規登録 (PokemonEditorView .create) を開く。
+// ホーム: 上段=選択中ポケモンの詳細パネル / 下段=ボックス
+// 下段でタップ→上段に表示、長押し→アクションメニュー
+// ツールバー「+」で新規登録 (PokemonEditorView .create) を開く
 struct PokemonHomeView: View {
     @State private var selected: OwnedPokemon?
     @State private var emptyTarget: EmptySlot?

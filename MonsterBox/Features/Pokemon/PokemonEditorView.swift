@@ -8,9 +8,9 @@
 import SwiftUI
 import SwiftData
 
-// 個体の追加・編集フォーム。
-// 種族を選ぶと、技候補がその種族の学習セットに限定される。
-// 追加時は空きスロットを自動割り当てして保存。
+// 個体の追加・編集フォーム
+// 種族を選ぶと、技候補がその種族の学習セットに限定される
+// 追加時は空きスロットを自動割り当てして保存
 struct PokemonEditorView: View {
     enum Mode {
         case create
@@ -18,7 +18,7 @@ struct PokemonEditorView: View {
     }
 
     let mode: Mode
-    // .create 時に保存先を指定する。nil なら findFreeSlot() で最初の空きへ。
+    // .create 時に保存先を指定する。nil なら findFreeSlot() で最初の空きへ
     var targetSlot: (box: Int, slot: Int)? = nil
 
     @Environment(\.modelContext) private var modelContext

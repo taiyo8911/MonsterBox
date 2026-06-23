@@ -61,7 +61,7 @@ private struct PrefetchGateView: View {
                 .foregroundStyle(.secondary)
 
             if hasFailures {
-                Text("\(failedCount) 件取得できませんでした。\nそのまま進んでも問題はありません。不足しているデータのみタイプ色タイルで表示されます。")
+                Text("\(failedCount) 件取得できませんでした。\nそのまま進んでも問題はありません")
                     .font(.footnote)
                     .multilineTextAlignment(.center)
                     .foregroundStyle(.secondary)
