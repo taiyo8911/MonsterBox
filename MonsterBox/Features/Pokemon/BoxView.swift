@@ -169,10 +169,11 @@ struct BoxView: View {
 
     private func cell(at slot: Int) -> some View {
         let occupant = pokemonInCurrentBox.first { $0.slot == slot }
-        let isSelected = (selected?.persistentModelID == occupant?.persistentModelID) && occupant != nil
+        let isOccupantSelected = occupant != nil && selected?.persistentModelID == occupant?.persistentModelID
+        let isEmptySelected = occupant == nil && emptyTarget?.box == currentBox && emptyTarget?.slot == slot
         return BoxCell(
             pokemon: occupant,
-            isSelected: isSelected,
+            isSelected: isOccupantSelected || isEmptySelected,
             isMoveTarget: move.isMoving
         )
         .contentShape(Rectangle())
