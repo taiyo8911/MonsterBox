@@ -10,8 +10,8 @@ import SwiftData
 
 // 上下2段構成の個体詳細パネル。
 // 上段: 左=スプライト/Lv/名前/性別/タイプ、右=能力6種(1列) + せいかく/とくせい
-// 下段: おぼえている技 (最大4、全幅で 分類/タイプ/威力/命中/PP を表示)
-// 未選択時 (pokemon == nil) は枠だけ残して中身を空にする。
+// 下段: おぼえている技 (最大4、全幅で タイプ/威力/命中/PP を表示)
+// pokemon の有無に関わらず常に同じViewツリーを描画し、空の場合は各セルがプレースホルダで高さを保つ。
 struct PokemonDetailPanel: View {
     let pokemon: OwnedPokemon?
 
@@ -19,18 +19,13 @@ struct PokemonDetailPanel: View {
 
     var body: some View {
         VStack(spacing: 10) {
-            if let pokemon {
-                HStack(alignment: .top, spacing: 12) {
-                    leftColumn(pokemon)
-                    Divider()
-                    rightColumn(pokemon)
-                }
+            HStack(alignment: .top, spacing: 12) {
+                leftColumn(pokemon)
                 Divider()
-                movesSection(pokemon)
-            } else {
-                // 未選択時もパネル高さを保つためのプレースホルダ
-                Color.clear.frame(height: 296)
+                rightColumn(pokemon)
             }
+            Divider()
+            movesSection(pokemon)
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .topLeading)
@@ -40,22 +35,36 @@ struct PokemonDetailPanel: View {
 
     // MARK: 上段-左 (スプライト/プロフィール)
 
-    private func leftColumn(_ pokemon: OwnedPokemon) -> some View {
+    private func leftColumn(_ pokemon: OwnedPokemon?) -> some View {
         VStack(alignment: .center, spacing: 8) {
-            SpriteImage(dex: pokemon.speciesDex, typeIDs: pokemon.typeIDs)
-                .frame(width: 96, height: 96)
+            Group {
+                if let pokemon {
+                    SpriteImage(dex: pokemon.speciesDex, typeIDs: pokemon.typeIDs)
+                } else {
+                    Color.clear
+                }
+            }
+            .frame(width: 96, height: 96)
 
             HStack(spacing: 6) {
-                Text("Lv.\(pokemon.level)")
-                    .font(.subheadline.bold())
-                Text(pokemon.displayName)
-                    .font(.subheadline)
-                    .lineLimit(1)
-                GenderMark(gender: pokemon.gender)
+                if let pokemon {
+                    Text("Lv.\(pokemon.level)")
+                        .font(.subheadline.bold())
+                    Text(pokemon.displayName)
+                        .font(.subheadline)
+                        .lineLimit(1)
+                    GenderMark(gender: pokemon.gender)
+                } else {
+                    Text(" ").font(.subheadline.bold())   // 行高さ確保
+                }
             }
 
             HStack(spacing: 4) {
-                ForEach(pokemon.typeIDs, id: \.self) { TypeBadge(typeID: $0) }
+                if let pokemon {
+                    ForEach(pokemon.typeIDs, id: \.self) { TypeBadge(typeID: $0) }
+                } else {
+                    TypeBadge(typeID: "normal").hidden() // 行高さ確保
+                }
             }
         }
         .frame(maxWidth: .infinity, alignment: .center)
@@ -63,41 +72,41 @@ struct PokemonDetailPanel: View {
 
     // MARK: 上段-右 (能力値 + せいかく/とくせい)
 
-    private func rightColumn(_ pokemon: OwnedPokemon) -> some View {
+    private func rightColumn(_ pokemon: OwnedPokemon?) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-            statRow("HP", pokemon.hp)
-            statRow("こうげき", pokemon.attack)
-            statRow("ぼうぎょ", pokemon.defense)
-            statRow("とくこう", pokemon.spAttack)
-            statRow("とくぼう", pokemon.spDefense)
-            statRow("すばやさ", pokemon.speed)
+            statRow("HP", pokemon?.hp)
+            statRow("こうげき", pokemon?.attack)
+            statRow("ぼうぎょ", pokemon?.defense)
+            statRow("とくこう", pokemon?.spAttack)
+            statRow("とくぼう", pokemon?.spDefense)
+            statRow("すばやさ", pokemon?.speed)
 
             Divider().padding(.vertical, 2)
 
-            labeled("せいかく", value: pokemon.nature.nameJa)
-            labeled("とくせい", value: pokemon.ability?.nameJa ?? "—")
+            labeled("せいかく", value: pokemon?.nature.nameJa)
+            labeled("とくせい", value: pokemon?.ability?.nameJa)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    private func statRow(_ title: String, _ value: Int) -> some View {
+    private func statRow(_ title: String, _ value: Int?) -> some View {
         HStack {
             Text(title)
                 .font(.caption)
                 .foregroundStyle(.secondary)
             Spacer()
-            Text("\(value)")
+            Text(value.map(String.init) ?? "—")
                 .font(.footnote.monospacedDigit())
         }
     }
 
-    private func labeled(_ title: String, value: String) -> some View {
+    private func labeled(_ title: String, value: String?) -> some View {
         HStack {
             Text(title)
                 .font(.caption2)
                 .foregroundStyle(.secondary)
             Spacer()
-            Text(value)
+            Text(value ?? "—")
                 .font(.footnote)
                 .lineLimit(1)
         }
@@ -105,7 +114,7 @@ struct PokemonDetailPanel: View {
 
     // MARK: 下段 (覚えている技、Gridで列揃え)
 
-    private func movesSection(_ pokemon: OwnedPokemon) -> some View {
+    private func movesSection(_ pokemon: OwnedPokemon?) -> some View {
         Grid(alignment: .leading, horizontalSpacing: 8, verticalSpacing: 6) {
             ForEach(0..<4, id: \.self) { i in
                 moveGridRow(at: i, in: pokemon)
@@ -114,27 +123,17 @@ struct PokemonDetailPanel: View {
     }
 
     @ViewBuilder
-    private func moveGridRow(at i: Int, in pokemon: OwnedPokemon) -> some View {
-        if i < pokemon.moveIDs.count {
-            if let move = master.move(id: pokemon.moveIDs[i]) {
-                GridRow {
-                    Text(move.nameJa)
-                        .font(.footnote)
-                        .lineLimit(1)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    TypeBadge(typeID: move.type)
-                    statCell("威", move.power)
-                    statCell("命", move.accuracy)
-                    statCell("PP", move.pp)
-                }
-            } else {
-                GridRow {
-                    Text(pokemon.moveIDs[i])
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .gridCellColumns(5)
-                }
+    private func moveGridRow(at i: Int, in pokemon: OwnedPokemon?) -> some View {
+        if let pokemon, i < pokemon.moveIDs.count, let move = master.move(id: pokemon.moveIDs[i]) {
+            GridRow {
+                Text(move.nameJa)
+                    .font(.footnote)
+                    .lineLimit(1)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                TypeBadge(typeID: move.type)
+                statCell("威", move.power)
+                statCell("命", move.accuracy)
+                statCell("PP", move.pp)
             }
         } else {
             GridRow {
